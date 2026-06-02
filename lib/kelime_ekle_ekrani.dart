@@ -248,7 +248,7 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           labelText: 'Türkçe Anlamı',
-                          hintText: 'Örn: Elma',
+                          hintText: 'Örn: Elma (virgülle çoklu: koşmak, yönetmek)',
                           prefixIcon: Icon(
                             Icons.translate_rounded,
                             color: Colors.amber.shade600,
@@ -277,6 +277,18 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                           color: karanlik
                               ? Colors.white
                               : Colors.brown.shade800,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      child: Text(
+                        '💡 İpucu: Bir kelimenin birden fazla anlamı varsa arasına virgül koyun (Örn: koşmak, yönetmek)',
+                        style: GoogleFonts.lato(
+                          fontSize: 12,
+                          color: karanlik ? Colors.grey.shade400 : Colors.brown.shade400,
+                          fontStyle: FontStyle.italic,
                         ),
                       ),
                     ),

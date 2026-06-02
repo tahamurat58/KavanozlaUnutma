@@ -7,17 +7,17 @@ import 'a2_kelimeler.dart';
 List<Kavanoz> getHazirKavanozlar() {
   return [
     Kavanoz(
-      isim: 'A1 Temel Kelimeler',
+      isim: 'Oxford A1 İngilizce Kelimeler',
       tip: 'hazir',
       seviye: 'A1',
-      ikon: '📗',
+      ikon: '🇬🇧',
       kelimeListesi: getA1Kelimeler(),
     ),
     Kavanoz(
-      isim: 'A2 İleri Kelimeler',
+      isim: 'Oxford A2 İngilizce Kelimeler',
       tip: 'hazir',
       seviye: 'A2',
-      ikon: '📘',
+      ikon: '🇬🇧',
       kelimeListesi: getA2Kelimeler(),
     ),
   ];

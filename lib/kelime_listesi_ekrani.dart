@@ -25,15 +25,32 @@ class KelimeListesiEkrani extends StatefulWidget {
 
 class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
   String _siralama = 'tarih'; 
+  String _aramaMetni = '';
 
   List<Kelime> _siraliListe() {
-    final liste = List<Kelime>.from(widget.kavanoz.kelimeListesi);
+    var liste = widget.kavanoz.kelimeListesi.where((k) {
+      final metin = _aramaMetni.toLowerCase();
+      return metin.isEmpty ||
+             k.ingilizce.toLowerCase().contains(metin) ||
+             k.turkce.toLowerCase().contains(metin);
+    }).toList();
+
     if (_siralama == 'en-cok-yanlis') {
-      liste.sort((a, b) => b.yanlisSayisi.compareTo(a.yanlisSayisi));
+      // Zayıflar: Hiç sorulmamışlar en alta, hata yapanlar en üste
+      liste.sort((a, b) {
+        // Hiç sorulmamışları en alta at
+        if (a.toplamSorulma == 0 && b.toplamSorulma > 0) return 1;
+        if (b.toplamSorulma == 0 && a.toplamSorulma > 0) return -1;
+        if (a.toplamSorulma == 0 && b.toplamSorulma == 0) return 0;
+        // Sorulanlar arasında başarı yüzdesine göre artan sıra
+        return a.basariYuzdesi.compareTo(b.basariYuzdesi);
+      });
     } else if (_siralama == 'en-cok-dogru') {
-      liste.sort((a, b) => b.dogruSayisi.compareTo(a.dogruSayisi));
-    } else if (_siralama == 'basari') {
-      liste.sort((a, b) => a.basariYuzdesi.compareTo(b.basariYuzdesi));
+      // Güçlüler: Başarı yüzdesine göre azalan sıra (en güçlü en üstte)
+      liste.sort((a, b) => b.basariYuzdesi.compareTo(a.basariYuzdesi));
+    } else if (_siralama == 'seri') {
+      // 🔥 Seri: En yüksek seri en üstte
+      liste.sort((a, b) => b.seri.compareTo(a.seri));
     }
     return liste;
   }
@@ -157,6 +174,31 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
 
               _istatistikKarti(),
 
+              // Arama Çubuğu
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: TextField(
+                  onChanged: (deger) {
+                    setState(() {
+                      _aramaMetni = deger;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    hintText: 'Kelime veya anlam ara...',
+                    prefixIcon: const Icon(Icons.search_rounded),
+                    filled: true,
+                    fillColor: widget.karanlikTema
+                        ? Colors.white.withValues(alpha: 0.05)
+                        : Colors.black.withValues(alpha: 0.03),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(16),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: SingleChildScrollView(
@@ -169,7 +211,7 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
                       const SizedBox(width: 6),
                       _siralamaChip('en-cok-dogru', 'Güçlüler', Icons.trending_up_rounded),
                       const SizedBox(width: 6),
-                      _siralamaChip('basari', 'Başarı %', Icons.bar_chart_rounded),
+                      _siralamaChip('seri', '🔥 Seri', Icons.local_fire_department_rounded),
                     ],
                   ),
                 ),

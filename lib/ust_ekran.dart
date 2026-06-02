@@ -130,8 +130,10 @@ class _UstEkranState extends State<UstEkran> {
       if (kelimeIndex != -1) {
         if (dogruMu) {
           kavanoz.kelimeListesi[kelimeIndex].dogruSayisi++;
+          kavanoz.kelimeListesi[kelimeIndex].seri++; // 🔥 Seri artır
         } else {
           kavanoz.kelimeListesi[kelimeIndex].yanlisSayisi++;
+          kavanoz.kelimeListesi[kelimeIndex].seri = 0; // 🔥 Seri sıfırla
         }
         _verileriKaydet();
       }

@@ -59,11 +59,17 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
 
   void _cevapKontrol() {
     final kullaniciCevabi = _turkceKucukHarf(_cevapController.text);
-    final beklenenCevap = _turkceKucukHarf(_dogruCevap);
 
     if (kullaniciCevabi.isEmpty) return;
 
-    final sonuc = kullaniciCevabi == beklenenCevap;
+    // Virgülle ayrılmış birden fazla anlam desteği
+    // Örn: "koşmak, yönetmek, çalıştırmak" → herhangi biri doğruysa kabul et
+    final anlamlar = _dogruCevap
+        .split(',')
+        .map((a) => _turkceKucukHarf(a))
+        .toList();
+
+    final sonuc = anlamlar.contains(kullaniciCevabi);
     widget.onSonuc(widget.kelime.id, sonuc);
 
     setState(() {

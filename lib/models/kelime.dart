@@ -25,6 +25,9 @@ class Kelime {
   // Yanlış cevap sayısı
   int yanlisSayisi;
 
+  // Ardı ardına doğru cevap serisi (🔥 streak)
+  int seri;
+
   Kelime({
     String? id, // ID verilirse kullan (JSON'dan okurken), yoksa yeni üret
     required this.ingilizce,
@@ -32,6 +35,7 @@ class Kelime {
     DateTime? tarih,
     this.dogruSayisi = 0,
     this.yanlisSayisi = 0,
+    this.seri = 0,
   })  : id = id ?? uuid.v4(),
         tarih = tarih ?? DateTime.now();
 
@@ -55,6 +59,7 @@ class Kelime {
       'tarih': tarih.toIso8601String(),
       'dogruSayisi': dogruSayisi,
       'yanlisSayisi': yanlisSayisi,
+      'seri': seri,
     };
   }
 
@@ -67,6 +72,7 @@ class Kelime {
       tarih: DateTime.parse(json['tarih'] as String),
       dogruSayisi: json['dogruSayisi'] as int? ?? 0,
       yanlisSayisi: json['yanlisSayisi'] as int? ?? 0,
+      seri: json['seri'] as int? ?? 0,
     );
   }
 }
