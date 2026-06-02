@@ -25,7 +25,24 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
   String _seciliIkon = '🏺';
 
   final List<String> _ikonlar = [
-    '🏺', '📚', '🚀', '⭐', '🔥', '🧠', '💼', '✈️', '🎮', '🍎'
+    '🇬🇧',
+    '🇩🇪',
+    '🇪🇸',
+    '🇫🇷',
+    '🇮🇹',
+    '🇷🇺',
+    '🇨🇳',
+    '🇯🇵',
+    '🏺',
+    '📚',
+    '🚀',
+    '⭐',
+    '🔥',
+    '🧠',
+    '💼',
+    '✈️',
+    '🎮',
+    '🍎',
   ];
 
   @override
@@ -35,7 +52,8 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
   }
 
   void _hataGoster(String mesaj) {
-    if (Platform.isIOS) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    if (isIOS) {
       showCupertinoDialog(
         context: context,
         builder: (ctx) => CupertinoAlertDialog(
@@ -72,7 +90,7 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
       _hataGoster('Lütfen kavanoz için bir isim girin.');
       return;
     }
-    
+
     widget.onKavanozEkle(isim, _seciliIkon);
     widget.ekranDegistir('kavanoz-secim');
   }
@@ -104,10 +122,7 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
               builder: (context, value, child) {
                 return Transform.translate(
                   offset: Offset(0, 30 * (1 - value)),
-                  child: Opacity(
-                    opacity: value,
-                    child: child,
-                  ),
+                  child: Opacity(opacity: value, child: child),
                 );
               },
               child: Column(
@@ -124,8 +139,13 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new,
-                            color: karanlik ? Colors.grey.shade300 : Colors.brown.shade700, size: 20),
+                        icon: Icon(
+                          Icons.arrow_back_ios_new,
+                          color: karanlik
+                              ? Colors.grey.shade300
+                              : Colors.brown.shade700,
+                          size: 20,
+                        ),
                         onPressed: () => widget.ekranDegistir('kavanoz-secim'),
                       ),
                     ),
@@ -153,16 +173,24 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
                       labelText: 'Kavanoz İsmi',
                       hintText: 'Örn: IELTS Kelimelerim',
                       filled: true,
-                      fillColor: karanlik ? const Color(0xFF2D2D44) : Colors.white,
+                      fillColor: karanlik
+                          ? const Color(0xFF2D2D44)
+                          : Colors.white,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none,
                       ),
-                      // DİKKAT: İşletim sistemi standart fontu
-                      labelStyle: TextStyle(color: karanlik ? Colors.grey.shade400 : Colors.brown.shade500),
+                      // DİKKAT: HİÇBİR FONT ZORLAMASI YOK
+                      labelStyle: TextStyle(
+                        color: karanlik
+                            ? Colors.grey.shade400
+                            : Colors.brown.shade500,
+                      ),
                     ),
-                    // DİKKAT: İşletim sistemi standart fontu
-                    style: TextStyle(color: karanlik ? Colors.white : Colors.black),
+                    // DİKKAT: HİÇBİR FONT ZORLAMASI YOK
+                    style: TextStyle(
+                      color: karanlik ? Colors.white : Colors.black,
+                    ),
                   ),
                   const SizedBox(height: 32),
 
@@ -172,7 +200,9 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
                     style: GoogleFonts.lato(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: karanlik ? Colors.grey.shade300 : Colors.brown.shade700,
+                      color: karanlik
+                          ? Colors.grey.shade300
+                          : Colors.brown.shade700,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -193,17 +223,31 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
                           decoration: BoxDecoration(
                             color: secili
                                 ? Colors.amber.shade500
-                                : karanlik ? const Color(0xFF2D2D44) : Colors.white,
+                                : karanlik
+                                ? const Color(0xFF2D2D44)
+                                : Colors.white,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: secili ? Colors.amber.shade600 : Colors.transparent,
+                              color: secili
+                                  ? Colors.amber.shade600
+                                  : Colors.transparent,
                               width: 2,
                             ),
-                            boxShadow: secili ? [
-                              BoxShadow(color: Colors.amber.withValues(alpha: 0.5), blurRadius: 8)
-                            ] : [],
+                            boxShadow: secili
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.amber.withValues(
+                                        alpha: 0.5,
+                                      ),
+                                      blurRadius: 8,
+                                    ),
+                                  ]
+                                : [],
                           ),
-                          child: Text(ikon, style: const TextStyle(fontSize: 28)),
+                          child: Text(
+                            ikon,
+                            style: const TextStyle(fontSize: 28),
+                          ),
                         ),
                       );
                     }).toList(),
@@ -223,7 +267,10 @@ class _KavanozOlusturEkraniState extends State<KavanozOlusturEkrani> {
                     ),
                     child: Text(
                       'Kavanozu Oluştur',
-                      style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: GoogleFonts.lato(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ],

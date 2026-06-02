@@ -33,7 +33,8 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
   }
 
   void _hataDialoguGoster(String mesaj) {
-    if (Platform.isIOS) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    if (isIOS) {
       showCupertinoDialog(
         context: context,
         builder: (ctx) => CupertinoAlertDialog(
@@ -51,7 +52,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Uyarı'),
           content: Text(mesaj),
           actions: [
@@ -70,7 +73,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
     final turkce = _turkceController.text.trim();
 
     if (ingilizce.isEmpty || turkce.isEmpty) {
-      _hataDialoguGoster('Lütfen hem İngilizce kelimeyi hem de Türkçe anlamını yazınız.');
+      _hataDialoguGoster(
+        'Lütfen hem İngilizce kelimeyi hem de Türkçe anlamını yazınız.',
+      );
       return;
     }
 
@@ -106,10 +111,7 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                 builder: (context, value, child) {
                   return Transform.translate(
                     offset: Offset(0, 30 * (1 - value)),
-                    child: Opacity(
-                      opacity: value,
-                      child: child,
-                    ),
+                    child: Opacity(opacity: value, child: child),
                   );
                 },
                 child: Column(
@@ -126,8 +128,13 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: IconButton(
-                          icon: Icon(Icons.arrow_back_ios_new_rounded,
-                              color: karanlik ? Colors.grey.shade300 : Colors.brown.shade700, size: 20),
+                          icon: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            color: karanlik
+                                ? Colors.grey.shade300
+                                : Colors.brown.shade700,
+                            size: 20,
+                          ),
                           onPressed: () => widget.ekranDegistir('ana-ekran'),
                         ),
                       ),
@@ -141,7 +148,10 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         height: 64,
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
-                            colors: [Colors.amber.shade400, Colors.orange.shade400],
+                            colors: [
+                              Colors.amber.shade400,
+                              Colors.orange.shade400,
+                            ],
                           ),
                           shape: BoxShape.circle,
                           boxShadow: [
@@ -152,7 +162,11 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                             ),
                           ],
                         ),
-                        child: const Icon(Icons.edit_note_rounded, color: Colors.white, size: 32),
+                        child: const Icon(
+                          Icons.edit_note_rounded,
+                          color: Colors.white,
+                          size: 32,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -164,7 +178,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         style: GoogleFonts.lato(
                           fontSize: 28,
                           fontWeight: FontWeight.w900,
-                          color: karanlik ? Colors.white : Colors.brown.shade800,
+                          color: karanlik
+                              ? Colors.white
+                              : Colors.brown.shade800,
                         ),
                       ),
                     ),
@@ -174,7 +190,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         'Yeni bir kelimeyi kavanoza at!',
                         style: GoogleFonts.lato(
                           fontSize: 14,
-                          color: karanlik ? Colors.grey.shade500 : Colors.brown.shade400,
+                          color: karanlik
+                              ? Colors.grey.shade500
+                              : Colors.brown.shade400,
                         ),
                       ),
                     ),
@@ -187,21 +205,37 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         controller: _ingilizceController,
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
-                          labelText: 'İngilizce Kelime',
-                          hintText: 'Örn: Apple',
-                          prefixIcon: Icon(Icons.language_rounded, color: Colors.amber.shade600),
+                          labelText: 'Yabancı Kelime',
+                          hintText: 'Örn: Apple / Apfel / Manzana',
+                          prefixIcon: Icon(
+                            Icons.language_rounded,
+                            color: Colors.amber.shade600,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(18),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
                           fillColor: Colors.transparent,
-                          // DİKKAT: İşletim sistemi standart fontu (Türkçe destekli)
-                          labelStyle: TextStyle(color: karanlik ? Colors.grey.shade400 : Colors.brown.shade500),
-                          hintStyle: TextStyle(color: karanlik ? Colors.grey.shade600 : Colors.brown.shade300),
+                          // DİKKAT: HİÇBİR FONT ZORLAMASI YOK, %100 İŞLETİM SİSTEMİ FONTU
+                          labelStyle: TextStyle(
+                            color: karanlik
+                                ? Colors.grey.shade400
+                                : Colors.brown.shade500,
+                          ),
+                          hintStyle: TextStyle(
+                            color: karanlik
+                                ? Colors.grey.shade600
+                                : Colors.brown.shade300,
+                          ),
                         ),
-                        // DİKKAT: İşletim sistemi standart fontu (Türkçe destekli)
-                        style: TextStyle(fontSize: 16, color: karanlik ? Colors.white : Colors.brown.shade800),
+                        // DİKKAT: HİÇBİR FONT ZORLAMASI YOK, %100 İŞLETİM SİSTEMİ FONTU
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: karanlik
+                              ? Colors.white
+                              : Colors.brown.shade800,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 18),
@@ -215,19 +249,35 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         decoration: InputDecoration(
                           labelText: 'Türkçe Anlamı',
                           hintText: 'Örn: Elma',
-                          prefixIcon: Icon(Icons.translate_rounded, color: Colors.amber.shade600),
+                          prefixIcon: Icon(
+                            Icons.translate_rounded,
+                            color: Colors.amber.shade600,
+                          ),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(18),
                             borderSide: BorderSide.none,
                           ),
                           filled: true,
                           fillColor: Colors.transparent,
-                          // DİKKAT: İşletim sistemi standart fontu (Türkçe destekli)
-                          labelStyle: TextStyle(color: karanlik ? Colors.grey.shade400 : Colors.brown.shade500),
-                          hintStyle: TextStyle(color: karanlik ? Colors.grey.shade600 : Colors.brown.shade300),
+                          // DİKKAT: HİÇBİR FONT ZORLAMASI YOK, %100 İŞLETİM SİSTEMİ FONTU
+                          labelStyle: TextStyle(
+                            color: karanlik
+                                ? Colors.grey.shade400
+                                : Colors.brown.shade500,
+                          ),
+                          hintStyle: TextStyle(
+                            color: karanlik
+                                ? Colors.grey.shade600
+                                : Colors.brown.shade300,
+                          ),
                         ),
-                        // DİKKAT: İşletim sistemi standart fontu (Türkçe destekli)
-                        style: TextStyle(fontSize: 16, color: karanlik ? Colors.white : Colors.brown.shade800),
+                        // DİKKAT: HİÇBİR FONT ZORLAMASI YOK, %100 İŞLETİM SİSTEMİ FONTU
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: karanlik
+                              ? Colors.white
+                              : Colors.brown.shade800,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 36),
@@ -250,15 +300,26 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                           backgroundColor: Colors.amber.shade600,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
                           elevation: 0,
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.add_circle_outline_rounded, size: 24),
+                            const Icon(
+                              Icons.add_circle_outline_rounded,
+                              size: 24,
+                            ),
                             const SizedBox(width: 8),
-                            Text('Kavanoza At!', style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.bold)),
+                            Text(
+                              'Kavanoza At!',
+                              style: GoogleFonts.lato(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -278,11 +339,15 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
       color: karanlik ? const Color(0xFF2D2D44) : Colors.white,
       borderRadius: BorderRadius.circular(18),
       border: Border.all(
-        color: karanlik ? Colors.amber.withValues(alpha: 0.1) : Colors.amber.withValues(alpha: 0.2),
+        color: karanlik
+            ? Colors.amber.withValues(alpha: 0.1)
+            : Colors.amber.withValues(alpha: 0.2),
       ),
       boxShadow: [
         BoxShadow(
-          color: karanlik ? Colors.black.withValues(alpha: 0.2) : Colors.amber.withValues(alpha: 0.1),
+          color: karanlik
+              ? Colors.black.withValues(alpha: 0.2)
+              : Colors.amber.withValues(alpha: 0.1),
           blurRadius: 10,
           offset: const Offset(0, 3),
         ),

@@ -6,11 +6,13 @@ import '../models/kelime.dart';
 /// KelimeSoruDialogu - Kavanozdan çekilen kelimeyi quiz formatında gösterir.
 class KelimeSoruDialogu extends StatefulWidget {
   final Kelime kelime;
+  final String kavanozIkon;
   final void Function(String id, bool dogruMu) onSonuc;
 
   const KelimeSoruDialogu({
     super.key,
     required this.kelime,
+    required this.kavanozIkon,
     required this.onSonuc,
   });
 
@@ -38,8 +40,8 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
 
   String get _soruKelime => _ingilizceSor ? widget.kelime.ingilizce : widget.kelime.turkce;
   String get _dogruCevap => _ingilizceSor ? widget.kelime.turkce : widget.kelime.ingilizce;
-  String get _soruDili => _ingilizceSor ? '🇬🇧 İngilizce' : '🇹🇷 Türkçe';
-  String get _cevapDili => _ingilizceSor ? 'Türkçe' : 'İngilizce';
+  String get _soruDili => _ingilizceSor ? '🌐 Yabancı Kelime' : '🇹🇷 Türkçe';
+  String get _cevapDili => _ingilizceSor ? 'Türkçe' : 'Yabancı Kelime';
 
   /// Türkçe karakterlere (I, İ, Ğ, Ü, Ş, Ö, Ç) tam duyarlı küçük harf çevirici
   String _turkceKucukHarf(String metin) {
@@ -104,7 +106,12 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                     BoxShadow(color: Colors.amber.withValues(alpha: 0.3), blurRadius: 12, spreadRadius: 2),
                   ],
                 ),
-                child: const Icon(Icons.auto_awesome, color: Colors.white, size: 28),
+                child: Center(
+                  child: Text(
+                    widget.kavanozIkon,
+                    style: const TextStyle(fontSize: 28),
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -174,7 +181,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                   keyboardType: TextInputType.text,
                   decoration: InputDecoration(
                     hintText: '$_cevapDili karşılığını yazın...',
-                    // DİKKAT: GoogleFonts kullanmıyoruz, işletim sistemi fontu kullanılıyor!
+                    // DİKKAT: HİÇBİR FONT ZORLAMASI YOK
                     hintStyle: TextStyle(
                       fontSize: 14,
                       color: karanlik ? Colors.grey.shade500 : Colors.brown.shade300,
@@ -199,7 +206,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                     filled: true,
                     fillColor: karanlik ? const Color(0xFF1A1A2E) : Colors.amber.shade50.withValues(alpha: 0.5),
                   ),
-                  // DİKKAT: GoogleFonts kullanmıyoruz, işletim sistemi fontu kullanılıyor!
+                  // DİKKAT: HİÇBİR FONT ZORLAMASI YOK
                   style: TextStyle(
                     fontSize: 16,
                     color: karanlik ? Colors.white : Colors.brown.shade800,

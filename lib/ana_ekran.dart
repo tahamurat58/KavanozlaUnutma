@@ -39,13 +39,15 @@ class AnaEkran extends StatelessWidget {
       barrierDismissible: false,
       builder: (ctx) => KelimeSoruDialogu(
         kelime: secilenKelime,
+        kavanozIkon: kavanoz.ikon,
         onSonuc: onIstatistikGuncelle,
       ),
     );
   }
 
   void _uyariGoster(BuildContext context, String mesaj) {
-    if (Platform.isIOS) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    if (isIOS) {
       showCupertinoDialog(
         context: context,
         builder: (ctx) => CupertinoAlertDialog(

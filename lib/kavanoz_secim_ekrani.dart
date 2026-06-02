@@ -26,7 +26,8 @@ class KavanozSecimEkrani extends StatelessWidget {
 
   /// Kavanoz silmeden önce onay dialogu
   void _silmeOnayi(BuildContext context, String id, String isim) {
-    if (Platform.isIOS) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+    if (isIOS) {
       showCupertinoDialog(
         context: context,
         builder: (ctx) => CupertinoAlertDialog(
