@@ -9,7 +9,6 @@ void main() {
 
 /// KavanozApp - Ana MaterialApp widget'ı
 /// Tema yönetimini (koyu/beyaz) üstlenir.
-/// Tema durumu burada tutulur ve alt widget'lara callback ile iletilir.
 class KavanozApp extends StatefulWidget {
   const KavanozApp({super.key});
 
@@ -18,11 +17,10 @@ class KavanozApp extends StatefulWidget {
 }
 
 class _KavanozAppState extends State<KavanozApp> {
-  // Koyu tema aktif mi? (Varsayılan: beyaz tema)
-  bool _karanlikTema = false;
+  // İlk açılışta koyu temanın gelmesi için true yaptık
+  bool _karanlikTema = true;
 
   /// Tema değiştirme fonksiyonu
-  /// Alt widget'lardan callback olarak çağrılır.
   void _temaDegistir() {
     setState(() {
       _karanlikTema = !_karanlikTema;

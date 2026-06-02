@@ -1,28 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'models/kavanoz.dart';
 import 'models/kelime.dart';
 import 'widgets/kelime_karti.dart';
 
-/// KelimeListesiEkrani - Kavanozdaki tüm kelimeleri listeler
-/// Her kelimeyi KelimeKarti widget'ı ile gösterir.
-/// İstatistiklere göre sıralama ve kelime silme işlevi içerir.
-/// Tema uyumludur.
+/// KelimeListesiEkrani - Seçili kavanozdaki kelimeleri listeler
 class KelimeListesiEkrani extends StatefulWidget {
-  // Kavanozdaki tüm kelimeler
-  final List<Kelime> kelimeListesi;
-
-  // Silme callback'i - üst ekrana kelime id'sini iletir
+  final Kavanoz kavanoz;
   final void Function(String id) onKelimeSil;
-
-  // Ekran değiştirme callback'i
   final void Function(String ekranAdi) ekranDegistir;
-
-  // Koyu tema aktif mi?
   final bool karanlikTema;
 
   const KelimeListesiEkrani({
     super.key,
-    required this.kelimeListesi,
+    required this.kavanoz,
     required this.onKelimeSil,
     required this.ekranDegistir,
     required this.karanlikTema,
@@ -33,168 +24,88 @@ class KelimeListesiEkrani extends StatefulWidget {
 }
 
 class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
-  // Aktif sıralama kriteri
-  String _siralama = 'tarih'; // 'tarih', 'en-cok-yanlis', 'en-cok-dogru', 'basari'
+  String _siralama = 'tarih'; 
 
-  /// Kelime listesini aktif sıralama kriterine göre sıralar
-  /// Orijinal listeyi değiştirmeden yeni bir sıralı liste döndürür.
   List<Kelime> _siraliListe() {
-    // Orijinal listeyi kopyala
-    final liste = List<Kelime>.from(widget.kelimeListesi);
-
+    final liste = List<Kelime>.from(widget.kavanoz.kelimeListesi);
     if (_siralama == 'en-cok-yanlis') {
-      // En çok yanlış yapılandan en aza (zayıf kelimeler önce)
       liste.sort((a, b) => b.yanlisSayisi.compareTo(a.yanlisSayisi));
     } else if (_siralama == 'en-cok-dogru') {
-      // En çok doğru yapılandan en aza
       liste.sort((a, b) => b.dogruSayisi.compareTo(a.dogruSayisi));
     } else if (_siralama == 'basari') {
-      // Başarı yüzdesine göre (en düşük başarı önce)
       liste.sort((a, b) => a.basariYuzdesi.compareTo(b.basariYuzdesi));
     }
-    // 'tarih' → ekleme sırası (varsayılan, sıralama yapmaya gerek yok)
-
     return liste;
   }
 
-  /// Genel istatistik kartı widget'ı
   Widget _istatistikKarti() {
     final karanlik = widget.karanlikTema;
-
-    // Toplam istatistikleri hesapla
     int toplamDogru = 0;
     int toplamYanlis = 0;
-    for (final kelime in widget.kelimeListesi) {
+    for (final kelime in widget.kavanoz.kelimeListesi) {
       toplamDogru += kelime.dogruSayisi;
       toplamYanlis += kelime.yanlisSayisi;
     }
     final toplamSoru = toplamDogru + toplamYanlis;
-    final genelBasari =
-        toplamSoru > 0 ? ((toplamDogru / toplamSoru) * 100).round() : 0;
+    final genelBasari = toplamSoru > 0 ? ((toplamDogru / toplamSoru) * 100).round() : 0;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: karanlik
-              ? [const Color(0xFF2D2D44), const Color(0xFF1A1A2E)]
-              : [Colors.amber.shade50, Colors.orange.shade50],
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: const Duration(milliseconds: 500),
+      curve: Curves.easeOutCubic,
+      builder: (context, value, child) {
+        return Transform.scale(
+          scale: 0.9 + (0.1 * value),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: karanlik
+                ? [const Color(0xFF2D2D44), const Color(0xFF1A1A2E)]
+                : [Colors.amber.shade50, Colors.orange.shade50],
+          ),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: karanlik ? Colors.amber.withValues(alpha: 0.12) : Colors.amber.withValues(alpha: 0.3),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: karanlik ? Colors.black.withValues(alpha: 0.3) : Colors.amber.withValues(alpha: 0.15),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(
-          color: karanlik
-              ? Colors.amber.withValues(alpha: 0.12)
-              : Colors.amber.withValues(alpha: 0.3),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _istatistikItem(icon: Icons.menu_book_rounded, deger: '${widget.kavanoz.kelimeListesi.length}', etiket: 'Kelime', renk: karanlik ? Colors.amber.shade300 : Colors.amber.shade700, karanlik: karanlik),
+            Container(width: 1, height: 40, color: karanlik ? Colors.grey.shade700 : Colors.amber.shade200),
+            _istatistikItem(icon: Icons.check_circle_outline_rounded, deger: '$toplamDogru', etiket: 'Doğru', renk: Colors.green.shade500, karanlik: karanlik),
+            Container(width: 1, height: 40, color: karanlik ? Colors.grey.shade700 : Colors.amber.shade200),
+            _istatistikItem(icon: Icons.cancel_outlined, deger: '$toplamYanlis', etiket: 'Yanlış', renk: Colors.red.shade400, karanlik: karanlik),
+            Container(width: 1, height: 40, color: karanlik ? Colors.grey.shade700 : Colors.amber.shade200),
+            _istatistikItem(icon: Icons.trending_up_rounded, deger: '%$genelBasari', etiket: 'Başarı', renk: genelBasari >= 70 ? Colors.green.shade500 : genelBasari >= 40 ? Colors.orange.shade500 : Colors.red.shade400, karanlik: karanlik),
+          ],
         ),
-        boxShadow: [
-          BoxShadow(
-            color: karanlik
-                ? Colors.black.withValues(alpha: 0.3)
-                : Colors.amber.withValues(alpha: 0.15),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          // Toplam kelime
-          _istatistikItem(
-            icon: Icons.menu_book_rounded,
-            deger: '${widget.kelimeListesi.length}',
-            etiket: 'Kelime',
-            renk: karanlik ? Colors.amber.shade300 : Colors.amber.shade700,
-            karanlik: karanlik,
-          ),
-          // Dikey ayırıcı
-          Container(
-            width: 1,
-            height: 40,
-            color: karanlik
-                ? Colors.grey.shade700
-                : Colors.amber.shade200,
-          ),
-          // Toplam doğru
-          _istatistikItem(
-            icon: Icons.check_circle_outline_rounded,
-            deger: '$toplamDogru',
-            etiket: 'Doğru',
-            renk: Colors.green.shade500,
-            karanlik: karanlik,
-          ),
-          // Dikey ayırıcı
-          Container(
-            width: 1,
-            height: 40,
-            color: karanlik
-                ? Colors.grey.shade700
-                : Colors.amber.shade200,
-          ),
-          // Toplam yanlış
-          _istatistikItem(
-            icon: Icons.cancel_outlined,
-            deger: '$toplamYanlis',
-            etiket: 'Yanlış',
-            renk: Colors.red.shade400,
-            karanlik: karanlik,
-          ),
-          // Dikey ayırıcı
-          Container(
-            width: 1,
-            height: 40,
-            color: karanlik
-                ? Colors.grey.shade700
-                : Colors.amber.shade200,
-          ),
-          // Genel başarı
-          _istatistikItem(
-            icon: Icons.trending_up_rounded,
-            deger: '%$genelBasari',
-            etiket: 'Başarı',
-            renk: genelBasari >= 70
-                ? Colors.green.shade500
-                : genelBasari >= 40
-                    ? Colors.orange.shade500
-                    : Colors.red.shade400,
-            karanlik: karanlik,
-          ),
-        ],
       ),
     );
   }
 
-  /// Tek bir istatistik öğesi (ikon, değer, etiket)
-  Widget _istatistikItem({
-    required IconData icon,
-    required String deger,
-    required String etiket,
-    required Color renk,
-    required bool karanlik,
-  }) {
+  Widget _istatistikItem({required IconData icon, required String deger, required String etiket, required Color renk, required bool karanlik}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, color: renk, size: 22),
         const SizedBox(height: 4),
-        Text(
-          deger,
-          style: GoogleFonts.lato(
-            fontSize: 18,
-            fontWeight: FontWeight.w900,
-            color: renk,
-          ),
-        ),
-        Text(
-          etiket,
-          style: GoogleFonts.lato(
-            fontSize: 11,
-            color: karanlik ? Colors.grey.shade500 : Colors.brown.shade400,
-          ),
-        ),
+        Text(deger, style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w900, color: renk)),
+        Text(etiket, style: GoogleFonts.lato(fontSize: 11, color: karanlik ? Colors.grey.shade500 : Colors.brown.shade400)),
       ],
     );
   }
@@ -205,7 +116,6 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
     final siraliKelimeler = _siraliListe();
 
     return Scaffold(
-      // Gradient arka planlı gövde
       body: Container(
         width: double.infinity,
         height: double.infinity,
@@ -214,154 +124,93 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
             begin: Alignment.topCenter,
             end: Alignment.bottomRight,
             colors: karanlik
-                ? [
-                    const Color(0xFF1A1A2E),
-                    const Color(0xFF16213E),
-                  ]
-                : [
-                    const Color(0xFFFFF8E1),
-                    const Color(0xFFFFE0B2),
-                  ],
+                ? [const Color(0xFF1A1A2E), const Color(0xFF16213E)]
+                : [const Color(0xFFFFF8E1), const Color(0xFFFFE0B2)],
           ),
         ),
         child: SafeArea(
           child: Column(
             children: [
-              // Üst bar: Geri butonu ve başlık
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12.0,
-                  vertical: 10.0,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
                 child: Row(
                   children: [
-                    // Geri butonu
                     Container(
                       decoration: BoxDecoration(
-                        color: karanlik
-                            ? Colors.white.withValues(alpha: 0.08)
-                            : Colors.black.withValues(alpha: 0.05),
+                        color: karanlik ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios_new_rounded,
-                          color: karanlik
-                              ? Colors.grey.shade300
-                              : Colors.brown.shade700,
-                          size: 20,
-                        ),
-                        onPressed: () =>
-                            widget.ekranDegistir('ana-ekran'),
+                        icon: Icon(Icons.arrow_back_ios_new_rounded, color: karanlik ? Colors.grey.shade300 : Colors.brown.shade700, size: 20),
+                        onPressed: () => widget.ekranDegistir('ana-ekran'),
                       ),
                     ),
                     const SizedBox(width: 12),
-                    // Başlık
                     Text(
                       '📋 Kelimelerim',
-                      style: GoogleFonts.lato(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        color: karanlik
-                            ? Colors.white
-                            : Colors.brown.shade800,
-                      ),
+                      style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.w900, color: karanlik ? Colors.white : Colors.brown.shade800),
                     ),
                     const Spacer(),
                   ],
                 ),
               ),
 
-              // Genel istatistik kartı
               _istatistikKarti(),
 
-              // Sıralama butonları
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 6,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: [
-                      _siralamaChip('tarih', 'Ekleme Sırası', Icons.schedule),
+                      _siralamaChip('tarih', 'Sıra', Icons.schedule),
                       const SizedBox(width: 6),
-                      _siralamaChip(
-                          'en-cok-yanlis', 'En Çok Yanlış', Icons.trending_down_rounded),
+                      _siralamaChip('en-cok-yanlis', 'Zayıflar', Icons.trending_down_rounded),
                       const SizedBox(width: 6),
-                      _siralamaChip(
-                          'en-cok-dogru', 'En Çok Doğru', Icons.trending_up_rounded),
+                      _siralamaChip('en-cok-dogru', 'Güçlüler', Icons.trending_up_rounded),
                       const SizedBox(width: 6),
                       _siralamaChip('basari', 'Başarı %', Icons.bar_chart_rounded),
                     ],
                   ),
                 ),
               ),
-
               const SizedBox(height: 4),
 
-              // Kelime listesi veya boş durum mesajı
               Expanded(
-                child: widget.kelimeListesi.isEmpty
-                    // Boş kavanoz durumu
+                child: widget.kavanoz.kelimeListesi.isEmpty
                     ? Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                color: karanlik
-                                    ? Colors.white.withValues(alpha: 0.05)
-                                    : Colors.amber.withValues(alpha: 0.1),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.inbox_rounded,
-                                size: 40,
-                                color: karanlik
-                                    ? Colors.grey.shade600
-                                    : Colors.brown.shade200,
-                              ),
-                            ),
+                            Icon(Icons.inbox_rounded, size: 60, color: karanlik ? Colors.grey.shade600 : Colors.brown.shade200),
                             const SizedBox(height: 16),
-                            Text(
-                              'Kavanoz boş!',
-                              style: GoogleFonts.lato(
-                                fontSize: 20,
-                                fontWeight: FontWeight.w600,
-                                color: karanlik
-                                    ? Colors.grey.shade400
-                                    : Colors.brown.shade400,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Henüz hiç kelime eklenmemiş.',
-                              style: GoogleFonts.lato(
-                                fontSize: 14,
-                                color: karanlik
-                                    ? Colors.grey.shade600
-                                    : Colors.brown.shade300,
-                              ),
-                            ),
+                            Text('Kavanoz boş!', style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.w600, color: karanlik ? Colors.grey.shade400 : Colors.brown.shade400)),
                           ],
                         ),
                       )
-                    // Kelime kartları listesi (sıralı)
-                    : ListView(
+                    : ListView.builder(
                         padding: const EdgeInsets.only(bottom: 16),
-                        children: [
-                          ...siraliKelimeler.map(
-                            (kelime) => KelimeKarti(
+                        itemCount: siraliKelimeler.length,
+                        itemBuilder: (context, index) {
+                          final kelime = siraliKelimeler[index];
+                          // Basit bir staggered animasyon (Listeye giriş için)
+                          return TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0.0, end: 1.0),
+                            duration: Duration(milliseconds: 300 + (index * 50).clamp(0, 500)),
+                            curve: Curves.easeOut,
+                            builder: (context, value, child) {
+                              return Transform.translate(
+                                offset: Offset(0, 20 * (1 - value)),
+                                child: Opacity(opacity: value, child: child),
+                              );
+                            },
+                            child: KelimeKarti(
                               kelime: kelime,
-                              onSil: widget.onKelimeSil,
+                              onSil: widget.kavanoz.isOzel ? widget.onKelimeSil : null,
                               karanlikTema: karanlik,
                             ),
-                          ),
-                        ],
+                          );
+                        },
                       ),
               ),
             ],
@@ -371,69 +220,34 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
     );
   }
 
-  /// Sıralama seçim chip'i oluşturur
   Widget _siralamaChip(String deger, String etiket, IconData ikon) {
     final karanlik = widget.karanlikTema;
     final secili = _siralama == deger;
-
     return GestureDetector(
       onTap: () {
         setState(() {
           _siralama = deger;
         });
       },
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
         decoration: BoxDecoration(
-          color: secili
-              ? Colors.amber.shade600
-              : karanlik
-                  ? Colors.white.withValues(alpha: 0.06)
-                  : Colors.white.withValues(alpha: 0.7),
+          color: secili ? Colors.amber.shade600 : karanlik ? Colors.white.withValues(alpha: 0.06) : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: secili
-                ? Colors.amber.shade600
-                : karanlik
-                    ? Colors.grey.shade700
-                    : Colors.amber.shade200,
+            color: secili ? Colors.amber.shade600 : karanlik ? Colors.grey.shade700 : Colors.amber.shade200,
             width: 1,
           ),
-          boxShadow: secili
-              ? [
-                  BoxShadow(
-                    color: Colors.amber.withValues(alpha: 0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 2),
-                  ),
-                ]
-              : [],
+          boxShadow: secili ? [BoxShadow(color: Colors.amber.withValues(alpha: 0.3), blurRadius: 8)] : [],
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              ikon,
-              size: 15,
-              color: secili
-                  ? Colors.white
-                  : karanlik
-                      ? Colors.grey.shade400
-                      : Colors.brown.shade500,
-            ),
+            Icon(ikon, size: 15, color: secili ? Colors.white : karanlik ? Colors.grey.shade400 : Colors.brown.shade500),
             const SizedBox(width: 5),
-            Text(
-              etiket,
-              style: GoogleFonts.lato(
-                fontSize: 12,
-                fontWeight: secili ? FontWeight.bold : FontWeight.w500,
-                color: secili
-                    ? Colors.white
-                    : karanlik
-                        ? Colors.grey.shade400
-                        : Colors.brown.shade600,
-              ),
-            ),
+            Text(etiket, style: GoogleFonts.lato(fontSize: 12, fontWeight: secili ? FontWeight.bold : FontWeight.w500, color: secili ? Colors.white : karanlik ? Colors.grey.shade400 : Colors.brown.shade600)),
           ],
         ),
       ),

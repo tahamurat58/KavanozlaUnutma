@@ -7,7 +7,7 @@ const uuid = Uuid();
 /// Kavanoza atılacak her kelimenin bilgilerini tutar.
 /// İstatistik bilgilerini (doğru/yanlış sayıları) de içerir.
 class Kelime {
-  // Benzersiz kimlik (otomatik üretilir)
+  // Benzersiz kimlik
   final String id;
 
   // İngilizce kelime
@@ -19,29 +19,54 @@ class Kelime {
   // Eklenme tarihi
   final DateTime tarih;
 
-  // Doğru cevap sayısı (quiz'de kaç kere doğru bildi)
+  // Doğru cevap sayısı
   int dogruSayisi;
 
-  // Yanlış cevap sayısı (quiz'de kaç kere yanlış bildi)
+  // Yanlış cevap sayısı
   int yanlisSayisi;
 
-  /// Constructor: id otomatik üretilir, tarih şu anki zaman olarak atanır.
-  /// İstatistikler sıfırdan başlar.
   Kelime({
+    String? id, // ID verilirse kullan (JSON'dan okurken), yoksa yeni üret
     required this.ingilizce,
     required this.turkce,
-  })  : id = uuid.v4(),
-        tarih = DateTime.now(),
-        dogruSayisi = 0,
-        yanlisSayisi = 0;
+    DateTime? tarih,
+    this.dogruSayisi = 0,
+    this.yanlisSayisi = 0,
+  })  : id = id ?? uuid.v4(),
+        tarih = tarih ?? DateTime.now();
 
   /// Toplam sorulma sayısı
   int get toplamSorulma => dogruSayisi + yanlisSayisi;
 
   /// Başarı yüzdesi (0-100 arası)
-  /// Hiç sorulmadıysa 0 döner.
   int get basariYuzdesi {
     if (toplamSorulma == 0) return 0;
     return ((dogruSayisi / toplamSorulma) * 100).round();
+  }
+
+  // ---- JSON Serileştirme (Veri Kaydetme) İşlemleri ----
+
+  /// Nesneyi JSON haritasına dönüştürür (Kaydetmek için)
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'ingilizce': ingilizce,
+      'turkce': turkce,
+      'tarih': tarih.toIso8601String(),
+      'dogruSayisi': dogruSayisi,
+      'yanlisSayisi': yanlisSayisi,
+    };
+  }
+
+  /// JSON haritasından nesne oluşturur (Okumak için)
+  factory Kelime.fromJson(Map<String, dynamic> json) {
+    return Kelime(
+      id: json['id'] as String,
+      ingilizce: json['ingilizce'] as String,
+      turkce: json['turkce'] as String,
+      tarih: DateTime.parse(json['tarih'] as String),
+      dogruSayisi: json['dogruSayisi'] as int? ?? 0,
+      yanlisSayisi: json['yanlisSayisi'] as int? ?? 0,
+    );
   }
 }
