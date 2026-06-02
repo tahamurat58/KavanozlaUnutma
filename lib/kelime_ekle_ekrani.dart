@@ -6,7 +6,7 @@ import 'models/kelime.dart';
 
 /// KelimeEkleEkrani - Yeni kelime ekleme formu
 /// İngilizce ve Türkçe girdileri alır, doğrulama yapar,
-/// ve callback ile üst ekrana bildirir.
+/// ve callback ile üst ekrana bildirir. Tema uyumludur.
 class KelimeEkleEkrani extends StatefulWidget {
   // Kelime ekleme callback'i - üst ekrana kelimeyi iletir
   final void Function(Kelime kelime) onKelimeEkle;
@@ -14,10 +14,14 @@ class KelimeEkleEkrani extends StatefulWidget {
   // Ekran değiştirme callback'i - ana ekrana dönmek için
   final void Function(String ekranAdi) ekranDegistir;
 
+  // Koyu tema aktif mi?
+  final bool karanlikTema;
+
   const KelimeEkleEkrani({
     super.key,
     required this.onKelimeEkle,
     required this.ekranDegistir,
+    required this.karanlikTema,
   });
 
   @override
@@ -60,6 +64,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Uyarı'),
           content: Text(mesaj),
           actions: [
@@ -80,15 +87,14 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
     final turkce = _turkceController.text.trim();
 
     if (ingilizce.isEmpty || turkce.isEmpty) {
-      _hataDialoguGoster('Lütfen hem İngilizce kelimeyi hem de Türkçe anlamını yazınız.');
+      _hataDialoguGoster(
+        'Lütfen hem İngilizce kelimeyi hem de Türkçe anlamını yazınız.',
+      );
       return;
     }
 
     // Yeni kelime oluştur ve üst ekrana bildir
-    final yeniKelime = Kelime(
-      ingilizce: ingilizce,
-      turkce: turkce,
-    );
+    final yeniKelime = Kelime(ingilizce: ingilizce, turkce: turkce);
 
     widget.onKelimeEkle(yeniKelime);
 
@@ -98,6 +104,8 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
 
   @override
   Widget build(BuildContext context) {
+    final karanlik = widget.karanlikTema;
+
     return Scaffold(
       // Gradient arka planlı gövde
       body: Container(
@@ -107,10 +115,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomRight,
-            colors: [
-              Colors.amber.shade50,
-              Colors.orange.shade100,
-            ],
+            colors: karanlik
+                ? [const Color(0xFF1A1A2E), const Color(0xFF16213E)]
+                : [const Color(0xFFFFF8E1), const Color(0xFFFFE0B2)],
           ),
         ),
         child: SafeArea(
@@ -123,24 +130,65 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                   // Geri butonu
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.brown.shade700,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: karanlik
+                            ? Colors.white.withValues(alpha: 0.08)
+                            : Colors.black.withValues(alpha: 0.05),
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      onPressed: () => widget.ekranDegistir('ana-ekran'),
+                      child: IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios_new_rounded,
+                          color: karanlik
+                              ? Colors.grey.shade300
+                              : Colors.brown.shade700,
+                          size: 20,
+                        ),
+                        onPressed: () => widget.ekranDegistir('ana-ekran'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Başlık ikonu
+                  Center(
+                    child: Container(
+                      width: 64,
+                      height: 64,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.amber.shade400,
+                            Colors.orange.shade400,
+                          ],
+                        ),
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.amber.withValues(alpha: 0.3),
+                            blurRadius: 16,
+                            spreadRadius: 2,
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.edit_note_rounded,
+                        color: Colors.white,
+                        size: 32,
+                      ),
                     ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Başlık
+                  // Başlık metni
                   Center(
                     child: Text(
-                      '📝 Kelime Ekle',
+                      'Kelime Ekle',
                       style: GoogleFonts.lato(
                         fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.brown.shade800,
+                        fontWeight: FontWeight.w900,
+                        color: karanlik ? Colors.white : Colors.brown.shade800,
                       ),
                     ),
                   ),
@@ -150,22 +198,31 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                       'Yeni bir kelimeyi kavanoza at!',
                       style: GoogleFonts.lato(
                         fontSize: 14,
-                        color: Colors.brown.shade400,
+                        color: karanlik
+                            ? Colors.grey.shade500
+                            : Colors.brown.shade400,
                       ),
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 36),
 
                   // İngilizce kelime girdi alanı
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      color: karanlik ? const Color(0xFF2D2D44) : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: karanlik
+                            ? Colors.amber.withValues(alpha: 0.1)
+                            : Colors.amber.withValues(alpha: 0.2),
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.amber.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: karanlik
+                              ? Colors.black.withValues(alpha: 0.2)
+                              : Colors.amber.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -175,38 +232,52 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         labelText: 'İngilizce Kelime',
                         hintText: 'Örn: Apple',
                         prefixIcon: Icon(
-                          Icons.language,
-                          color: Colors.amber.shade700,
+                          Icons.language_rounded,
+                          color: Colors.amber.shade600,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Colors.transparent,
                         labelStyle: GoogleFonts.lato(
-                          color: Colors.brown.shade500,
+                          color: karanlik
+                              ? Colors.grey.shade400
+                              : Colors.brown.shade500,
+                        ),
+                        hintStyle: GoogleFonts.lato(
+                          color: karanlik
+                              ? Colors.grey.shade600
+                              : Colors.brown.shade300,
                         ),
                       ),
                       style: GoogleFonts.lato(
                         fontSize: 16,
-                        color: Colors.brown.shade800,
+                        color: karanlik ? Colors.white : Colors.brown.shade800,
                       ),
                       textCapitalization: TextCapitalization.sentences,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 18),
 
                   // Türkçe anlam girdi alanı
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
+                      color: karanlik ? const Color(0xFF2D2D44) : Colors.white,
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(
+                        color: karanlik
+                            ? Colors.amber.withValues(alpha: 0.1)
+                            : Colors.amber.withValues(alpha: 0.2),
+                      ),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.amber.withValues(alpha: 0.1),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
+                          color: karanlik
+                              ? Colors.black.withValues(alpha: 0.2)
+                              : Colors.amber.withValues(alpha: 0.1),
+                          blurRadius: 10,
+                          offset: const Offset(0, 3),
                         ),
                       ],
                     ),
@@ -216,53 +287,75 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         labelText: 'Türkçe Anlamı',
                         hintText: 'Örn: Elma',
                         prefixIcon: Icon(
-                          Icons.translate,
-                          color: Colors.amber.shade700,
+                          Icons.translate_rounded,
+                          color: Colors.amber.shade600,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(18),
                           borderSide: BorderSide.none,
                         ),
                         filled: true,
-                        fillColor: Colors.white,
+                        fillColor: Colors.transparent,
                         labelStyle: GoogleFonts.lato(
-                          color: Colors.brown.shade500,
+                          color: karanlik
+                              ? Colors.grey.shade400
+                              : Colors.brown.shade500,
+                        ),
+                        hintStyle: GoogleFonts.lato(
+                          color: karanlik
+                              ? Colors.grey.shade600
+                              : Colors.brown.shade300,
                         ),
                       ),
                       style: GoogleFonts.lato(
                         fontSize: 16,
-                        color: Colors.brown.shade800,
+                        color: karanlik ? Colors.white : Colors.brown.shade800,
                       ),
                       textCapitalization: TextCapitalization.sentences,
                     ),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 36),
 
                   // Kavanoza At butonu
-                  ElevatedButton(
-                    onPressed: _kelimeyiKavanozaAt,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.amber.shade600,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 4,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Icon(Icons.add_circle_outline, size: 24),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Kavanoza At!',
-                          style: GoogleFonts.lato(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.amber.withValues(alpha: 0.3),
+                          blurRadius: 14,
+                          offset: const Offset(0, 5),
                         ),
                       ],
+                    ),
+                    child: ElevatedButton(
+                      onPressed: _kelimeyiKavanozaAt,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.amber.shade600,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.add_circle_outline_rounded,
+                            size: 24,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Kavanoza At!',
+                            style: GoogleFonts.lato(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

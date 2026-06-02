@@ -6,9 +6,19 @@ import 'kelime_listesi_ekrani.dart';
 
 /// UstEkran - Ana state yöneticisi
 /// Tüm ekranları yöneten parent widget.
-/// Kelime listesini tutar, ekran geçişlerini kontrol eder.
+/// Kelime listesini, istatistikleri ve ekran geçişlerini kontrol eder.
 class UstEkran extends StatefulWidget {
-  const UstEkran({super.key});
+  // Koyu tema aktif mi?
+  final bool karanlikTema;
+
+  // Tema değiştirme callback'i (üst seviye KavanozApp'e bildirir)
+  final VoidCallback temaDegistir;
+
+  const UstEkran({
+    super.key,
+    required this.karanlikTema,
+    required this.temaDegistir,
+  });
 
   @override
   State<UstEkran> createState() => _UstEkranState();
@@ -45,6 +55,24 @@ class _UstEkranState extends State<UstEkran> {
     });
   }
 
+  /// Kelime istatistik güncelleme fonksiyonu
+  /// Quiz sonucuna göre doğru veya yanlış sayısını artırır.
+  /// KelimeSoruDialogu'ndan AnaEkran üzerinden callback ile çağrılır.
+  void _istatistikGuncelle(String id, bool dogruMu) {
+    setState(() {
+      // İlgili kelimeyi bul ve istatistiğini güncelle
+      final kelimeIndex =
+          _kelimeListesi.indexWhere((kelime) => kelime.id == id);
+      if (kelimeIndex != -1) {
+        if (dogruMu) {
+          _kelimeListesi[kelimeIndex].dogruSayisi++;
+        } else {
+          _kelimeListesi[kelimeIndex].yanlisSayisi++;
+        }
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Aktif ekrana göre widget döndür (if-else blokları)
@@ -52,6 +80,7 @@ class _UstEkranState extends State<UstEkran> {
       return KelimeEkleEkrani(
         onKelimeEkle: _kelimeEkle,
         ekranDegistir: _ekranDegistir,
+        karanlikTema: widget.karanlikTema,
       );
     }
 
@@ -60,6 +89,7 @@ class _UstEkranState extends State<UstEkran> {
         kelimeListesi: _kelimeListesi,
         onKelimeSil: _kelimeSil,
         ekranDegistir: _ekranDegistir,
+        karanlikTema: widget.karanlikTema,
       );
     }
 
@@ -67,6 +97,9 @@ class _UstEkranState extends State<UstEkran> {
     return AnaEkran(
       kelimeListesi: _kelimeListesi,
       ekranDegistir: _ekranDegistir,
+      karanlikTema: widget.karanlikTema,
+      temaDegistir: widget.temaDegistir,
+      onIstatistikGuncelle: _istatistikGuncelle,
     );
   }
 }
