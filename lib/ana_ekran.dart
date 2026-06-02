@@ -1,9 +1,9 @@
-import 'dart:io';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'models/kavanoz.dart';
+import 'models/kelime.dart';
 import 'widgets/kavanoz_widget.dart';
 import 'widgets/kelime_soru_dialogu.dart';
 
@@ -16,6 +16,10 @@ class AnaEkran extends StatelessWidget {
   final VoidCallback temaDegistir;
   final void Function(String id, bool dogruMu) onIstatistikGuncelle;
 
+  // Akıllı Mod (Pekiştirmeli Öğrenme) kontrolü
+  final bool akilliMod;
+  final VoidCallback onAkilliModDegistir;
+
   const AnaEkran({
     super.key,
     required this.kavanoz,
@@ -23,7 +27,65 @@ class AnaEkran extends StatelessWidget {
     required this.karanlikTema,
     required this.temaDegistir,
     required this.onIstatistikGuncelle,
+    required this.akilliMod,
+    required this.onAkilliModDegistir,
   });
+
+  // ──────────────────────────────────────────────────────────────
+  //  PEKİŞTİRMELİ ÖĞRENME (REINFORCEMENT LEARNING) ALGORİTMASI
+  //
+  //  Epsilon-Greedy tabanlı Akıllı Kelime Seçimi:
+  //
+  //  • Ajan (Agent):       Bu kelime seçme algoritması
+  //  • Ortam (Environment): Kullanıcının öğrenme durumu (istatistikler)
+  //  • Durum (State):       Her kelimenin doğru/yanlış/toplam sayıları
+  //  • Eylem (Action):      Hangi kelimeyi sıradaki soruda göstereyim?
+  //  • Ödül (Reward):       Kullanıcının doğru/yanlış cevabı
+  //
+  //  Strateji:
+  //  - ε (epsilon) = 0.2 → %20 ihtimalle rastgele keşif (Exploration)
+  //  - %80 ihtimalle en yüksek öncelikli kelimeyi seç (Exploitation)
+  //
+  //  Öncelik Skoru (Priority Score) Formülü:
+  //  priority = (1 - başarıOranı) * 0.6          ← Zayıf kelimelere ağırlık
+  //           + (1 / (toplamSorulma + 1)) * 0.3  ← Az sorulan kelimelere keşif bonusu
+  //           + rastgeleFaktör * 0.1              ← Monotonluğu kırma
+  // ──────────────────────────────────────────────────────────────
+
+  /// Epsilon-Greedy RL algoritmasıyla kelime seçer
+  Kelime _akilliKelimeSec(List<Kelime> kelimeler) {
+    final random = Random();
+    const double epsilon = 0.2; // Keşif oranı (%20)
+
+    // Keşif (Exploration): Epsilon olasılığıyla rastgele kelime seç
+    if (random.nextDouble() < epsilon) {
+      return kelimeler[random.nextInt(kelimeler.length)];
+    }
+
+    // Sömürü (Exploitation): En yüksek öncelikli kelimeyi seç
+    double enYuksekSkor = -1;
+    Kelime enOncelikliKelime = kelimeler.first;
+
+    for (final kelime in kelimeler) {
+      // Başarı oranı (0.0 - 1.0 arası)
+      final basariOrani = kelime.toplamSorulma > 0
+          ? kelime.dogruSayisi / kelime.toplamSorulma
+          : 0.0;
+
+      // RL Öncelik Skoru hesaplama
+      final oncelikSkoru =
+          (1.0 - basariOrani) * 0.6 +                          // Zayıf kelimeler öncelikli
+          (1.0 / (kelime.toplamSorulma + 1)) * 0.3 +           // Az sorulanlar keşfedilsin
+          random.nextDouble() * 0.1;                            // Stokastik çeşitlendirme
+
+      if (oncelikSkoru > enYuksekSkor) {
+        enYuksekSkor = oncelikSkoru;
+        enOncelikliKelime = kelime;
+      }
+    }
+
+    return enOncelikliKelime;
+  }
 
   void _kelimeCek(BuildContext context) {
     if (kavanoz.kelimeListesi.isEmpty) {
@@ -31,8 +93,14 @@ class AnaEkran extends StatelessWidget {
       return;
     }
 
-    final rastgeleIndex = Random().nextInt(kavanoz.kelimeListesi.length);
-    final secilenKelime = kavanoz.kelimeListesi[rastgeleIndex];
+    // Akıllı Mod açıksa RL algoritması, kapalıysa rastgele seçim
+    final Kelime secilenKelime;
+    if (akilliMod) {
+      secilenKelime = _akilliKelimeSec(kavanoz.kelimeListesi);
+    } else {
+      final rastgeleIndex = Random().nextInt(kavanoz.kelimeListesi.length);
+      secilenKelime = kavanoz.kelimeListesi[rastgeleIndex];
+    }
 
     showDialog(
       context: context,
@@ -97,11 +165,10 @@ class AnaEkran extends StatelessWidget {
         child: SafeArea(
           child: Column(
             children: [
-              // Üst bar: Geri dön ve Tema değiştirme
+              // Üst bar: Geri dön, Akıllı Mod ve Tema değiştirme
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     // Geri butonu (Kavanoz seçime döner)
                     Container(
@@ -120,6 +187,69 @@ class AnaEkran extends StatelessWidget {
                         onPressed: () => ekranDegistir('kavanoz-secim'),
                       ),
                     ),
+
+                    const Spacer(),
+
+                    // ── AKILLI MOD TOGGLE BUTONU ──
+                    GestureDetector(
+                      onTap: onAkilliModDegistir,
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        curve: Curves.easeInOut,
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          gradient: akilliMod
+                              ? LinearGradient(
+                                  colors: [Colors.deepPurple.shade400, Colors.purple.shade300],
+                                )
+                              : null,
+                          color: akilliMod
+                              ? null
+                              : karanlikTema
+                                  ? Colors.white.withValues(alpha: 0.08)
+                                  : Colors.black.withValues(alpha: 0.06),
+                          borderRadius: BorderRadius.circular(14),
+                          boxShadow: akilliMod
+                              ? [
+                                  BoxShadow(
+                                    color: Colors.deepPurple.withValues(alpha: 0.4),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                ]
+                              : [],
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              akilliMod ? Icons.psychology_rounded : Icons.psychology_outlined,
+                              color: akilliMod
+                                  ? Colors.white
+                                  : karanlikTema
+                                      ? Colors.grey.shade400
+                                      : Colors.brown.shade500,
+                              size: 20,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              akilliMod ? 'AI Açık' : 'AI Kapalı',
+                              style: GoogleFonts.lato(
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
+                                color: akilliMod
+                                    ? Colors.white
+                                    : karanlikTema
+                                        ? Colors.grey.shade400
+                                        : Colors.brown.shade500,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(width: 8),
 
                     // Tema butonu
                     Container(
@@ -185,6 +315,41 @@ class AnaEkran extends StatelessWidget {
                 ),
               ),
 
+              // Akıllı Mod açıklama etiketi
+              if (akilliMod)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+                    decoration: BoxDecoration(
+                      color: Colors.deepPurple.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: Colors.deepPurple.withValues(alpha: 0.25),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.auto_awesome,
+                          size: 14,
+                          color: Colors.deepPurple.shade300,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Zayıf kelimeler öncelikli sorulacak',
+                          style: GoogleFonts.lato(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.deepPurple.shade300,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+
               const Spacer(flex: 1),
 
               // Kavanoz widget'ı
@@ -207,7 +372,9 @@ class AnaEkran extends StatelessWidget {
                         borderRadius: BorderRadius.circular(22),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.amber.withValues(alpha: 0.35),
+                            color: akilliMod
+                                ? Colors.deepPurple.withValues(alpha: 0.35)
+                                : Colors.amber.withValues(alpha: 0.35),
                             blurRadius: 16,
                             offset: const Offset(0, 6),
                           ),
@@ -216,7 +383,9 @@ class AnaEkran extends StatelessWidget {
                       child: ElevatedButton(
                         onPressed: () => _kelimeCek(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.amber.shade600,
+                          backgroundColor: akilliMod
+                              ? Colors.deepPurple.shade500
+                              : Colors.amber.shade600,
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
@@ -227,10 +396,13 @@ class AnaEkran extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.shuffle_rounded, size: 26),
+                            Icon(
+                              akilliMod ? Icons.psychology_rounded : Icons.shuffle_rounded,
+                              size: 26,
+                            ),
                             const SizedBox(width: 10),
                             Text(
-                              'Kelime Çek!',
+                              akilliMod ? 'Akıllı Kelime Çek!' : 'Kelime Çek!',
                               style: GoogleFonts.lato(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,

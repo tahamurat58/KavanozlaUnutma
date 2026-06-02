@@ -36,6 +36,9 @@ class _UstEkranState extends State<UstEkran> {
   // Verilerin yüklenip yüklenmediği
   bool _verilerYuklendi = false;
 
+  // Akıllı Mod (Pekiştirmeli Öğrenme) açık mı?
+  bool _akilliMod = true;
+
   @override
   void initState() {
     super.initState();
@@ -197,6 +200,12 @@ class _UstEkranState extends State<UstEkran> {
       karanlikTema: widget.karanlikTema,
       temaDegistir: widget.temaDegistir,
       onIstatistikGuncelle: _istatistikGuncelle,
+      akilliMod: _akilliMod,
+      onAkilliModDegistir: () {
+        setState(() {
+          _akilliMod = !_akilliMod;
+        });
+      },
     );
   }
 }
