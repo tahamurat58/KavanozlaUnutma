@@ -128,13 +128,33 @@ class _UstEkranState extends State<UstEkran> {
       final kelimeIndex = kavanoz.kelimeListesi.indexWhere((k) => k.id == kelimeId);
       
       if (kelimeIndex != -1) {
+        final kelime = kavanoz.kelimeListesi[kelimeIndex];
+
         if (dogruMu) {
-          kavanoz.kelimeListesi[kelimeIndex].dogruSayisi++;
-          kavanoz.kelimeListesi[kelimeIndex].seri++; // 🔥 Seri artır
+          kelime.dogruSayisi++;
+          kelime.seri++; // 🔥 Seri artır
         } else {
-          kavanoz.kelimeListesi[kelimeIndex].yanlisSayisi++;
-          kavanoz.kelimeListesi[kelimeIndex].seri = 0; // 🔥 Seri sıfırla
+          kelime.yanlisSayisi++;
+          kelime.seri = 0; // 🔥 Seri sıfırla
         }
+
+        // ──────────────────────────────────────────────────────
+        //  ARITIMLi Q-DEĞERİ GÜNCELLEMESİ (Incremental RL Update)
+        //
+        //  Formül: Q(t+1) = Q(t) + α × (r - Q(t))
+        //
+        //  • α = 0.2  →  öğrenme hızı (learning rate)
+        //  • r = 1.0  →  doğru cevap için ödül (reward)
+        //  • r = 0.0  →  yanlış cevap için ödül (reward)
+        //
+        //  Bu formül Q-değerini her adımda anlık ödüle yaklaştırır.
+        //  Doğru cevaplar → Q artar (1.0'a yaklaşır)
+        //  Yanlış cevaplar → Q azalır (0.0'a yaklaşır)
+        // ──────────────────────────────────────────────────────
+        const double alfa = 0.2; // Öğrenme hızı
+        final double odul = dogruMu ? 1.0 : 0.0; // Ödül sinyali
+        kelime.qDegeri = kelime.qDegeri + alfa * (odul - kelime.qDegeri);
+
         _verileriKaydet();
       }
     });
@@ -145,7 +165,7 @@ class _UstEkranState extends State<UstEkran> {
     // Veriler yüklenene kadar bekleme ekranı
     if (!_verilerYuklendi) {
       return Scaffold(
-        backgroundColor: widget.karanlikTema ? const Color(0xFF1A1A2E) : const Color(0xFFFFF8E1),
+        backgroundColor: widget.karanlikTema ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC),
         body: Center(
           child: CircularProgressIndicator(color: Colors.amber.shade600),
         ),

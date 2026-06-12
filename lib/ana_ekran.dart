@@ -1,4 +1,4 @@
-import 'dart:math';
+import 'dart:math'; // Rastgele kelime seçimi için (Akıllı Mod kapalıyken)
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -34,57 +34,42 @@ class AnaEkran extends StatelessWidget {
   // ──────────────────────────────────────────────────────────────
   //  PEKİŞTİRMELİ ÖĞRENME (REINFORCEMENT LEARNING) ALGORİTMASI
   //
-  //  Epsilon-Greedy tabanlı Akıllı Kelime Seçimi:
+  //  Arıtımlı Q-Değeri Tabanlı Akıllı Kelime Seçimi:
   //
-  //  • Ajan (Agent):       Bu kelime seçme algoritması
-  //  • Ortam (Environment): Kullanıcının öğrenme durumu (istatistikler)
-  //  • Durum (State):       Her kelimenin doğru/yanlış/toplam sayıları
-  //  • Eylem (Action):      Hangi kelimeyi sıradaki soruda göstereyim?
-  //  • Ödül (Reward):       Kullanıcının doğru/yanlış cevabı
+  //  • Ajan (Agent):        Bu kelime seçme algoritması
+  //  • Ortam (Environment): Kullanıcının öğrenme durumu
+  //  • Durum (State):       Her kelimenin Q-değeri (öğrenilmişlik kalitesi)
+  //  • Eylem (Action):      Hangi kelimeyi sıradaki soruda göster?
+  //  • Ödül (Reward):       Doğru cevap → +1.0 | Yanlış cevap → 0.0
   //
-  //  Strateji:
-  //  - ε (epsilon) = 0.2 → %20 ihtimalle rastgele keşif (Exploration)
-  //  - %80 ihtimalle en yüksek öncelikli kelimeyi seç (Exploitation)
+  //  Strateji: En düşük Q-değerine sahip kelimeyi seç
+  //  → En az öğrenilmiş kelimeye öncelik ver
   //
-  //  Öncelik Skoru (Priority Score) Formülü:
-  //  priority = (1 - başarıOranı) * 0.6          ← Zayıf kelimelere ağırlık
-  //           + (1 / (toplamSorulma + 1)) * 0.3  ← Az sorulan kelimelere keşif bonusu
-  //           + rastgeleFaktör * 0.1              ← Monotonluğu kırma
+  //  Q-Değeri Güncelleme (Arıtımlı / Incremental):
+  //    Q(t+1) = Q(t) + α × (r - Q(t))
+  //    α = 0.2 (öğrenme hızı)
+  //    r = 1.0 (doğru) veya 0.0 (yanlış)
+  //
+  //  Q başlangıç değeri: 0.5 (nötr — henüz bilinmiyor)
+  //  Q → 1.0 yaklaştıkça kelime "öğrenildi" sayılır
+  //  Q → 0.0 yaklaştıkça kelime "öğrenilmemiş" sayılır
   // ──────────────────────────────────────────────────────────────
 
-  /// Epsilon-Greedy RL algoritmasıyla kelime seçer
+  /// Q-değeri tabanlı RL algoritmasıyla kelime seçer.
+  /// En düşük Q-değerli (en az öğrenilmiş) kelimeyi seçer.
   Kelime _akilliKelimeSec(List<Kelime> kelimeler) {
-    final random = Random();
-    const double epsilon = 0.2; // Keşif oranı (%20)
-
-    // Keşif (Exploration): Epsilon olasılığıyla rastgele kelime seç
-    if (random.nextDouble() < epsilon) {
-      return kelimeler[random.nextInt(kelimeler.length)];
-    }
-
-    // Sömürü (Exploitation): En yüksek öncelikli kelimeyi seç
-    double enYuksekSkor = -1;
-    Kelime enOncelikliKelime = kelimeler.first;
+    // En düşük Q-değerine sahip kelimeyi bul
+    Kelime enDusukQKelime = kelimeler.first;
+    double enDusukQ = kelimeler.first.qDegeri;
 
     for (final kelime in kelimeler) {
-      // Başarı oranı (0.0 - 1.0 arası)
-      final basariOrani = kelime.toplamSorulma > 0
-          ? kelime.dogruSayisi / kelime.toplamSorulma
-          : 0.0;
-
-      // RL Öncelik Skoru hesaplama
-      final oncelikSkoru =
-          (1.0 - basariOrani) * 0.6 +                          // Zayıf kelimeler öncelikli
-          (1.0 / (kelime.toplamSorulma + 1)) * 0.3 +           // Az sorulanlar keşfedilsin
-          random.nextDouble() * 0.1;                            // Stokastik çeşitlendirme
-
-      if (oncelikSkoru > enYuksekSkor) {
-        enYuksekSkor = oncelikSkoru;
-        enOncelikliKelime = kelime;
+      if (kelime.qDegeri < enDusukQ) {
+        enDusukQ = kelime.qDegeri;
+        enDusukQKelime = kelime;
       }
     }
 
-    return enOncelikliKelime;
+    return enDusukQKelime;
   }
 
   void _kelimeCek(BuildContext context) {
@@ -158,8 +143,8 @@ class AnaEkran extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomRight,
             colors: karanlikTema
-                ? [const Color(0xFF1A1A2E), const Color(0xFF16213E), const Color(0xFF0F3460)]
-                : [const Color(0xFFFFF8E1), const Color(0xFFFFE0B2), const Color(0xFFFFCCBC)],
+                ? [const Color(0xFF0F172A), const Color(0xFF1E293B), const Color(0xFF0F172A)] // Uzay siyahı & Slate
+                : [const Color(0xFFF8FAFC), const Color(0xFFF1F5F9), const Color(0xFFE2E8F0)], // Temiz, modern açık tema
           ),
         ),
         child: SafeArea(
@@ -234,7 +219,7 @@ class AnaEkran extends StatelessWidget {
                             const SizedBox(width: 6),
                             Text(
                               akilliMod ? 'AI Açık' : 'AI Kapalı',
-                              style: GoogleFonts.lato(
+                              style: GoogleFonts.outfit(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: akilliMod
@@ -285,7 +270,7 @@ class AnaEkran extends StatelessWidget {
                   const SizedBox(width: 8),
                   Text(
                     kavanoz.isim,
-                    style: GoogleFonts.lato(
+                    style: GoogleFonts.outfit(
                       fontSize: 28,
                       fontWeight: FontWeight.w900,
                       color: karanlikTema ? Colors.white : Colors.brown.shade800,
@@ -308,7 +293,7 @@ class AnaEkran extends StatelessWidget {
                     ? 'Hazır ${kavanoz.seviye} kelimelerini çek ve ezberle!'
                     : 'Kendi eklediğin kelimeleri çek ve ezberle!',
                   textAlign: TextAlign.center,
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.outfit(
                     fontSize: 13,
                     color: karanlikTema ? Colors.grey.shade400 : Colors.brown.shade500,
                   ),
@@ -339,7 +324,7 @@ class AnaEkran extends StatelessWidget {
                         const SizedBox(width: 6),
                         Text(
                           'Zayıf kelimeler öncelikli sorulacak',
-                          style: GoogleFonts.lato(
+                          style: GoogleFonts.outfit(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             color: Colors.deepPurple.shade300,
@@ -403,7 +388,7 @@ class AnaEkran extends StatelessWidget {
                             const SizedBox(width: 10),
                             Text(
                               akilliMod ? 'Akıllı Kelime Çek!' : 'Kelime Çek!',
-                              style: GoogleFonts.lato(
+                              style: GoogleFonts.outfit(
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
                               ),
@@ -430,7 +415,7 @@ class AnaEkran extends StatelessWidget {
                                   const SizedBox(width: 6),
                                   Text(
                                     'Ekle',
-                                    style: GoogleFonts.lato(
+                                    style: GoogleFonts.outfit(
                                       fontSize: 15,
                                       fontWeight: FontWeight.bold,
                                     ),
@@ -454,7 +439,7 @@ class AnaEkran extends StatelessWidget {
                                 const SizedBox(width: 6),
                                 Text(
                                   'Liste',
-                                  style: GoogleFonts.lato(
+                                  style: GoogleFonts.outfit(
                                     fontSize: 15,
                                     fontWeight: FontWeight.bold,
                                   ),

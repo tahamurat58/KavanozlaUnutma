@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -32,7 +31,9 @@ class KavanozSecimEkrani extends StatelessWidget {
         context: context,
         builder: (ctx) => CupertinoAlertDialog(
           title: const Text('Kavanozu Sil'),
-          content: Text('"$isim" kavanozunu ve içindeki tüm kelimeleri silmek istediğinize emin misiniz?'),
+          content: Text(
+            '"$isim" kavanozunu ve içindeki tüm kelimeleri silmek istediğinize emin misiniz?',
+          ),
           actions: [
             CupertinoDialogAction(
               child: const Text('İptal'),
@@ -53,9 +54,13 @@ class KavanozSecimEkrani extends StatelessWidget {
       showDialog(
         context: context,
         builder: (ctx) => AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
           title: const Text('Kavanozu Sil'),
-          content: Text('"$isim" kavanozunu ve içindeki tüm kelimeleri silmek istediğinize emin misiniz?'),
+          content: Text(
+            '"$isim" kavanozunu ve içindeki tüm kelimeleri silmek istediğinize emin misiniz?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
@@ -96,7 +101,10 @@ class KavanozSecimEkrani extends StatelessWidget {
             children: [
               // Üst bar: Tema butonu
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -110,7 +118,9 @@ class KavanozSecimEkrani extends StatelessWidget {
                       child: IconButton(
                         icon: Icon(
                           karanlikTema ? Icons.light_mode : Icons.dark_mode,
-                          color: karanlikTema ? Colors.amber.shade300 : Colors.brown.shade600,
+                          color: karanlikTema
+                              ? Colors.amber.shade300
+                              : Colors.brown.shade600,
                         ),
                         onPressed: temaDegistir,
                       ),
@@ -130,7 +140,9 @@ class KavanozSecimEkrani extends StatelessWidget {
                       style: GoogleFonts.lato(
                         fontSize: 32,
                         fontWeight: FontWeight.w900,
-                        color: karanlikTema ? Colors.white : Colors.brown.shade800,
+                        color: karanlikTema
+                            ? Colors.white
+                            : Colors.brown.shade800,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -138,7 +150,9 @@ class KavanozSecimEkrani extends StatelessWidget {
                       "Çalışmak istediğin kavanozu seç veya yeni bir tane oluştur.",
                       style: GoogleFonts.lato(
                         fontSize: 15,
-                        color: karanlikTema ? Colors.grey.shade400 : Colors.brown.shade500,
+                        color: karanlikTema
+                            ? Colors.grey.shade400
+                            : Colors.brown.shade500,
                       ),
                     ),
                   ],
@@ -157,7 +171,8 @@ class KavanozSecimEkrani extends StatelessWidget {
                       kavanoz: kavanoz,
                       karanlikTema: karanlikTema,
                       onSec: () => onKavanozSec(kavanoz.id),
-                      onSil: () => _silmeOnayi(context, kavanoz.id, kavanoz.isim),
+                      onSil: () =>
+                          _silmeOnayi(context, kavanoz.id, kavanoz.isim),
                     );
                   },
                 ),

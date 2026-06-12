@@ -1,4 +1,4 @@
-import '../models/kelime.dart';
+﻿import '../models/kelime.dart';
 
 /// A1 Seviyesi (Temel Düzey) İngilizce - Türkçe Kelimeler
 /// Yaklaşık 120 temel kelime içerir.

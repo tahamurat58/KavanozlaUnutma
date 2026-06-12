@@ -1,4 +1,4 @@
-import '../models/kelime.dart';
+﻿import '../models/kelime.dart';
 
 /// A2 Seviyesi (Ön Orta Düzey) İngilizce - Türkçe Kelimeler
 /// Yaklaşık 120 geliştirilmiş kelime içerir.

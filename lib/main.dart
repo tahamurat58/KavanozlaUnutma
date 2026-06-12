@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'ust_ekran.dart';
@@ -48,27 +48,31 @@ class _KavanozAppState extends State<KavanozApp> {
       // ---- BEYAZ TEMA ----
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.amber,
+          seedColor: const Color(0xFFF9A826),
           brightness: Brightness.light,
+          primary: const Color(0xFFF9A826),
+          secondary: const Color(0xFFFF7B54),
         ),
-        // Premium görünüm için Lato fontunu geri ekledik
-        textTheme: GoogleFonts.latoTextTheme(),
+        // Premium görünüm için Outfit fontu
+        textTheme: GoogleFonts.outfitTextTheme(),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFFFF8E1),
+        scaffoldBackgroundColor: const Color(0xFFF8FAFC), // Çok yumuşak kırık beyaz
       ),
 
       // ---- KOYU TEMA ----
       darkTheme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.amber,
+          seedColor: Colors.orangeAccent,
           brightness: Brightness.dark,
+          primary: Colors.orangeAccent,
+          secondary: const Color(0xFF38BDF8), // Neon Mavi
         ),
-        // Premium görünüm için Lato fontunu geri ekledik
-        textTheme: GoogleFonts.latoTextTheme(
+        // Premium görünüm için Outfit fontu
+        textTheme: GoogleFonts.outfitTextTheme(
           ThemeData(brightness: Brightness.dark).textTheme,
         ),
         useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFF1A1A2E),
+        scaffoldBackgroundColor: const Color(0xFF0F172A), // Derin uzay mavisi/siyahı (Slate 900)
       ),
 
       // Aktif tema modu

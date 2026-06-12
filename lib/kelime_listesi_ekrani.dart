@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'models/kavanoz.dart';
 import 'models/kelime.dart';
@@ -84,7 +84,7 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: karanlik
-                ? [const Color(0xFF2D2D44), const Color(0xFF1A1A2E)]
+                ? [const Color(0xFF2D2D44), const Color(0xFF0F172A)]
                 : [Colors.amber.shade50, Colors.orange.shade50],
           ),
           borderRadius: BorderRadius.circular(20),
@@ -121,8 +121,8 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
       children: [
         Icon(icon, color: renk, size: 22),
         const SizedBox(height: 4),
-        Text(deger, style: GoogleFonts.lato(fontSize: 18, fontWeight: FontWeight.w900, color: renk)),
-        Text(etiket, style: GoogleFonts.lato(fontSize: 11, color: karanlik ? Colors.grey.shade500 : Colors.brown.shade400)),
+        Text(deger, style: GoogleFonts.outfit(fontSize: 18, fontWeight: FontWeight.w900, color: renk)),
+        Text(etiket, style: GoogleFonts.outfit(fontSize: 11, color: karanlik ? Colors.grey.shade500 : Colors.brown.shade400)),
       ],
     );
   }
@@ -141,8 +141,8 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
             begin: Alignment.topCenter,
             end: Alignment.bottomRight,
             colors: karanlik
-                ? [const Color(0xFF1A1A2E), const Color(0xFF16213E)]
-                : [const Color(0xFFFFF8E1), const Color(0xFFFFE0B2)],
+                ? [const Color(0xFF0F172A), const Color(0xFF1E293B)]
+                : [const Color(0xFFF8FAFC), const Color(0xFFF1F5F9)],
           ),
         ),
         child: SafeArea(
@@ -165,7 +165,7 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
                     const SizedBox(width: 12),
                     Text(
                       '📋 Kelimelerim',
-                      style: GoogleFonts.lato(fontSize: 22, fontWeight: FontWeight.w900, color: karanlik ? Colors.white : Colors.brown.shade800),
+                      style: GoogleFonts.outfit(fontSize: 22, fontWeight: FontWeight.w900, color: karanlik ? Colors.white : Colors.brown.shade800),
                     ),
                     const Spacer(),
                   ],
@@ -226,7 +226,7 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
                           children: [
                             Icon(Icons.inbox_rounded, size: 60, color: karanlik ? Colors.grey.shade600 : Colors.brown.shade200),
                             const SizedBox(height: 16),
-                            Text('Kavanoz boş!', style: GoogleFonts.lato(fontSize: 20, fontWeight: FontWeight.w600, color: karanlik ? Colors.grey.shade400 : Colors.brown.shade400)),
+                            Text('Kavanoz boş!', style: GoogleFonts.outfit(fontSize: 20, fontWeight: FontWeight.w600, color: karanlik ? Colors.grey.shade400 : Colors.brown.shade400)),
                           ],
                         ),
                       )
@@ -289,7 +289,7 @@ class _KelimeListesiEkraniState extends State<KelimeListesiEkrani> {
           children: [
             Icon(ikon, size: 15, color: secili ? Colors.white : karanlik ? Colors.grey.shade400 : Colors.brown.shade500),
             const SizedBox(width: 5),
-            Text(etiket, style: GoogleFonts.lato(fontSize: 12, fontWeight: secili ? FontWeight.bold : FontWeight.w500, color: secili ? Colors.white : karanlik ? Colors.grey.shade400 : Colors.brown.shade600)),
+            Text(etiket, style: GoogleFonts.outfit(fontSize: 12, fontWeight: secili ? FontWeight.bold : FontWeight.w500, color: secili ? Colors.white : karanlik ? Colors.grey.shade400 : Colors.brown.shade600)),
           ],
         ),
       ),

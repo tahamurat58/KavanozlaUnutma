@@ -1,4 +1,4 @@
-import 'dart:math';
+﻿import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/kelime.dart';
@@ -123,7 +123,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
 
               Text(
                 'Kavanozdan Çıkan',
-                style: GoogleFonts.lato(
+                style: GoogleFonts.outfit(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: karanlik ? Colors.grey.shade300 : Colors.brown.shade600,
@@ -142,7 +142,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                 ),
                 child: Text(
                   _soruDili,
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.outfit(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
                     color: karanlik ? Colors.amber.shade300 : Colors.brown.shade500,
@@ -153,7 +153,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
 
               Text(
                 _soruKelime,
-                style: GoogleFonts.lato(
+                style: GoogleFonts.outfit(
                   fontSize: 30,
                   fontWeight: FontWeight.w900,
                   color: karanlik ? Colors.amber.shade200 : Colors.amber.shade800,
@@ -210,7 +210,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                     ),
                     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                     filled: true,
-                    fillColor: karanlik ? const Color(0xFF1A1A2E) : Colors.amber.shade50.withValues(alpha: 0.5),
+                    fillColor: karanlik ? const Color(0xFF0F172A) : Colors.amber.shade50.withValues(alpha: 0.5),
                   ),
                   // DİKKAT: HİÇBİR FONT ZORLAMASI YOK
                   style: TextStyle(
@@ -233,7 +233,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                       elevation: 4,
                       shadowColor: Colors.amber.shade200,
                     ),
-                    child: Text('Kontrol Et', style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: Text('Kontrol Et', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.bold)),
                   ),
                 ),
               ],
@@ -267,7 +267,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
 
                 Text(
                   _dogruMu ? 'Doğru! 🎉' : 'Yanlış! 😔',
-                  style: GoogleFonts.lato(
+                  style: GoogleFonts.outfit(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: _dogruMu ? Colors.green.shade600 : Colors.red.shade500,
@@ -288,7 +288,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                       children: [
                         Text(
                           'Doğru cevap:',
-                          style: GoogleFonts.lato(
+                          style: GoogleFonts.outfit(
                             fontSize: 12,
                             color: karanlik ? Colors.grey.shade400 : Colors.brown.shade400,
                           ),
@@ -296,7 +296,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                         const SizedBox(height: 4),
                         Text(
                           _dogruCevap,
-                          style: GoogleFonts.lato(
+                          style: GoogleFonts.outfit(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                             color: Colors.green.shade700,
@@ -309,7 +309,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                   const SizedBox(height: 8),
                   Text(
                     'Senin cevabın: ${_cevapController.text.trim()}',
-                    style: GoogleFonts.lato(
+                    style: GoogleFonts.outfit(
                       fontSize: 13,
                       color: Colors.red.shade400,
                       fontStyle: FontStyle.italic,
@@ -328,7 +328,7 @@ class _KelimeSoruDialoguState extends State<KelimeSoruDialogu> {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                       side: BorderSide(color: karanlik ? Colors.amber.shade600 : Colors.amber.shade400),
                     ),
-                    child: Text('Tamam', style: GoogleFonts.lato(fontSize: 16, fontWeight: FontWeight.w600)),
+                    child: Text('Tamam', style: GoogleFonts.outfit(fontSize: 16, fontWeight: FontWeight.w600)),
                   ),
                 ),
               ],

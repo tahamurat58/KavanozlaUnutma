@@ -46,23 +46,29 @@ class KelimeKarti extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: karanlikTema
-              ? [const Color(0xFF2D2D44), const Color(0xFF252540)]
-              : [Colors.white, Colors.amber.shade50],
+              ? [
+                  const Color(0xFF1E293B).withValues(alpha: 0.6),
+                  const Color(0xFF0F172A).withValues(alpha: 0.7),
+                ]
+              : [
+                  Colors.white.withValues(alpha: 0.8),
+                  Colors.white.withValues(alpha: 0.5),
+                ],
         ),
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: karanlikTema
-              ? Colors.amber.withValues(alpha: 0.1)
-              : Colors.amber.withValues(alpha: 0.2),
-          width: 1,
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white,
+          width: karanlikTema ? 1.0 : 1.5,
         ),
         boxShadow: [
           BoxShadow(
             color: karanlikTema
                 ? Colors.black.withValues(alpha: 0.3)
-                : Colors.amber.withValues(alpha: 0.12),
-            blurRadius: 10,
-            offset: const Offset(0, 3),
+                : const Color(0xFFE2E8F0).withValues(alpha: 0.6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
@@ -108,7 +114,7 @@ class KelimeKarti extends StatelessWidget {
                   // İngilizce kelime (büyük ve kalın)
                   Text(
                     kelime.ingilizce,
-                    style: GoogleFonts.lato(
+                    style: GoogleFonts.outfit(
                       fontSize: 17,
                       fontWeight: FontWeight.bold,
                       color: karanlikTema
@@ -120,7 +126,7 @@ class KelimeKarti extends StatelessWidget {
                   // Türkçe anlamı (daha küçük, açık renk)
                   Text(
                     kelime.turkce,
-                    style: GoogleFonts.lato(
+                    style: GoogleFonts.outfit(
                       fontSize: 13,
                       color: karanlikTema
                           ? Colors.grey.shade400
@@ -142,7 +148,7 @@ class KelimeKarti extends StatelessWidget {
                       const SizedBox(width: 3),
                       Text(
                         '${kelime.dogruSayisi}',
-                        style: GoogleFonts.lato(
+                        style: GoogleFonts.outfit(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.green.shade500,
@@ -159,7 +165,7 @@ class KelimeKarti extends StatelessWidget {
                       const SizedBox(width: 3),
                       Text(
                         '${kelime.yanlisSayisi}',
-                        style: GoogleFonts.lato(
+                        style: GoogleFonts.outfit(
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                           color: Colors.red.shade400,
@@ -180,7 +186,7 @@ class KelimeKarti extends StatelessWidget {
                           ),
                           child: Text(
                             '%${kelime.basariYuzdesi}',
-                            style: GoogleFonts.lato(
+                            style: GoogleFonts.outfit(
                               fontSize: 11,
                               fontWeight: FontWeight.bold,
                               color: _basariRengi(),
@@ -208,7 +214,7 @@ class KelimeKarti extends StatelessWidget {
                               const SizedBox(width: 2),
                               Text(
                                 '${kelime.seri}',
-                                style: GoogleFonts.lato(
+                                style: GoogleFonts.outfit(
                                   fontSize: 11,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.orange.shade600,

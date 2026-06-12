@@ -39,23 +39,29 @@ class KavanozKarti extends StatelessWidget {
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
             colors: karanlikTema
-                ? [const Color(0xFF2D2D44), const Color(0xFF252540)]
-                : [Colors.white, Colors.amber.shade50],
+                ? [
+                    const Color(0xFF1E293B).withValues(alpha: 0.7),
+                    const Color(0xFF0F172A).withValues(alpha: 0.8),
+                  ]
+                : [
+                    Colors.white.withValues(alpha: 0.9),
+                    Colors.white.withValues(alpha: 0.6),
+                  ],
           ),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24), // Daha kavisli hatlar
           border: Border.all(
-            color: kavanoz.isHazir
-                ? Colors.blue.withValues(alpha: karanlikTema ? 0.3 : 0.4)
-                : Colors.amber.withValues(alpha: karanlikTema ? 0.2 : 0.4),
-            width: 1.5,
+            color: karanlikTema
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.white,
+            width: karanlikTema ? 1.0 : 2.0,
           ),
           boxShadow: [
             BoxShadow(
               color: karanlikTema
-                  ? Colors.black.withValues(alpha: 0.3)
-                  : Colors.amber.withValues(alpha: 0.15),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+                  ? Colors.black.withValues(alpha: 0.4)
+                  : const Color(0xFFE2E8F0).withValues(alpha: 0.6),
+              blurRadius: 16,
+              offset: const Offset(0, 8),
             ),
           ],
         ),
@@ -98,7 +104,7 @@ class KavanozKarti extends StatelessWidget {
                         Expanded(
                           child: Text(
                             kavanoz.isim,
-                            style: GoogleFonts.lato(
+                            style: GoogleFonts.outfit(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                               color: karanlikTema
@@ -118,7 +124,7 @@ class KavanozKarti extends StatelessWidget {
                             ),
                             child: Text(
                               'Hazır',
-                              style: GoogleFonts.lato(
+                              style: GoogleFonts.outfit(
                                 fontSize: 10,
                                 fontWeight: FontWeight.bold,
                                 color: karanlikTema
@@ -143,7 +149,7 @@ class KavanozKarti extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '${kavanoz.kelimeListesi.length} kelime',
-                          style: GoogleFonts.lato(
+                          style: GoogleFonts.outfit(
                             fontSize: 13,
                             color: karanlikTema
                                 ? Colors.grey.shade400
@@ -163,7 +169,7 @@ class KavanozKarti extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           '%$basari başarı',
-                          style: GoogleFonts.lato(
+                          style: GoogleFonts.outfit(
                             fontSize: 13,
                             color: karanlikTema
                                 ? Colors.grey.shade400

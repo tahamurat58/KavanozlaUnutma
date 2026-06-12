@@ -28,6 +28,24 @@ class Kelime {
   // Ardı ardına doğru cevap serisi (🔥 streak)
   int seri;
 
+  // ──────────────────────────────────────────────────────────────
+  //  Q-DEĞERİ (Q-Value) — Pekiştirmeli Öğrenme (RL)
+  //
+  //  Her kelimenin "öğrenilmişlik kalitesini" temsil eder.
+  //  0.0 → Hiç bilinmiyor / çok zayıf
+  //  1.0 → Tam öğrenilmiş
+  //
+  //  Arıtımlı (Incremental) Güncelleme Formülü:
+  //    Q(t+1) = Q(t) + α × (r - Q(t))
+  //
+  //  • α (alfa) = öğrenme hızı = 0.2
+  //  • r = ödül: doğru cevap → 1.0, yanlış cevap → 0.0
+  //  • Q(t) = mevcut Q-değeri
+  //
+  //  Başlangıç değeri: 0.5 (nötr — ne iyi ne kötü bilinmiyor)
+  // ──────────────────────────────────────────────────────────────
+  double qDegeri;
+
   Kelime({
     String? id, // ID verilirse kullan (JSON'dan okurken), yoksa yeni üret
     required this.ingilizce,
@@ -36,6 +54,7 @@ class Kelime {
     this.dogruSayisi = 0,
     this.yanlisSayisi = 0,
     this.seri = 0,
+    this.qDegeri = 0.5, // Başlangıçta nötr (ne iyi ne kötü bilinmiyor)
   })  : id = id ?? uuid.v4(),
         tarih = tarih ?? DateTime.now();
 
@@ -60,6 +79,7 @@ class Kelime {
       'dogruSayisi': dogruSayisi,
       'yanlisSayisi': yanlisSayisi,
       'seri': seri,
+      'qDegeri': qDegeri,
     };
   }
 
@@ -73,6 +93,7 @@ class Kelime {
       dogruSayisi: json['dogruSayisi'] as int? ?? 0,
       yanlisSayisi: json['yanlisSayisi'] as int? ?? 0,
       seri: json['seri'] as int? ?? 0,
+      qDegeri: (json['qDegeri'] as num?)?.toDouble() ?? 0.5,
     );
   }
 }

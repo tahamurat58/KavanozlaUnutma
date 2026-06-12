@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -248,7 +247,8 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           labelText: 'Türkçe Anlamı',
-                          hintText: 'Örn: Elma (virgülle çoklu: koşmak, yönetmek)',
+                          hintText:
+                              'Örn: Elma (virgülle çoklu: koşmak, yönetmek)',
                           prefixIcon: Icon(
                             Icons.translate_rounded,
                             color: Colors.amber.shade600,
@@ -287,7 +287,9 @@ class _KelimeEkleEkraniState extends State<KelimeEkleEkrani> {
                         '💡 İpucu: Bir kelimenin birden fazla anlamı varsa arasına virgül koyun (Örn: koşmak, yönetmek)',
                         style: GoogleFonts.lato(
                           fontSize: 12,
-                          color: karanlik ? Colors.grey.shade400 : Colors.brown.shade400,
+                          color: karanlik
+                              ? Colors.grey.shade400
+                              : Colors.brown.shade400,
                           fontStyle: FontStyle.italic,
                         ),
                       ),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// KavanozWidget - Ana ekranda gösterilecek kavanoz görseli
@@ -145,7 +145,7 @@ class KavanozWidget extends StatelessWidget {
                     const SizedBox(height: 10),
                     Text(
                       '$kelimeSayisi',
-                      style: GoogleFonts.lato(
+                      style: GoogleFonts.outfit(
                         fontSize: 38,
                         fontWeight: FontWeight.w900,
                         color: karanlikTema ? Colors.amber.shade200 : Colors.amber.shade800,
@@ -153,7 +153,7 @@ class KavanozWidget extends StatelessWidget {
                     ),
                     Text(
                       'kelime',
-                      style: GoogleFonts.lato(
+                      style: GoogleFonts.outfit(
                         fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: karanlikTema ? Colors.grey.shade400 : Colors.brown.shade400,
